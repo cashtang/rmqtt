@@ -28,7 +28,6 @@ pub async fn register(
 }
 
 struct NewcapecPlugin {
-    runtime: &'static Runtime,
     name: String,
     descr: String,
     register: Box<dyn Register>,
@@ -41,7 +40,7 @@ impl NewcapecPlugin {
         descr: D,
     ) -> Result<Self> {
         let register = runtime.extends.hook_mgr().await.register();
-        Ok(Self { runtime, name: name.into(), descr: descr.into(), register })
+        Ok(Self { name: name.into(), descr: descr.into(), register })
     }
 }
 
@@ -51,22 +50,37 @@ impl Plugin for NewcapecPlugin {
     async fn init(&mut self) -> Result<()> {
         log::info!("{} init", self.name);
         self.register.add_priority(Type::ClientConnack, 0, Box::new(NewcapecHandler::new())).await;
+        self.register.add_priority(Type::ClientConnect, 0, Box::new(NewcapecHandler::new())).await;
+        Ok(())
+    }
+
+    // #[inline]
+    // fn name(&self) -> &str {
+    //     &self.name
+    // }
+
+    // #[inline]
+    // fn version(&self) -> &str {
+    //     "0.1.1"
+    // }
+
+    // #[inline]
+    // fn descr(&self) -> &str {
+    //     &self.descr
+    // }
+
+    #[inline]
+    async fn start(&mut self) -> Result<()> {
+        log::info!("{} start", self.name);
+        self.register.start().await;
         Ok(())
     }
 
     #[inline]
-    fn name(&self) -> &str {
-        &self.name
-    }
-
-    #[inline]
-    fn version(&self) -> &str {
-        "0.1.1"
-    }
-
-    #[inline]
-    fn descr(&self) -> &str {
-        &self.descr
+    async fn stop(&mut self) -> Result<bool> {
+        log::info!("{} stop", self.name);
+        self.register.stop().await;
+        Ok(true)
     }
 }
 
@@ -82,7 +96,12 @@ impl NewcapecHandler {
 #[async_trait]
 impl Handler for NewcapecHandler {
     async fn hook(&self, param: &Parameter, acc: Option<HookResult>) -> ReturnType {
+        log::info!("NewcapecHandler hook");
         let ok = match param {
+            Parameter::ClientConnect(conn_info) => {
+                log::info!("ClientConnect: {:?}", conn_info);
+                true
+            }
             Parameter::ClientConnack(conn_info, reason) => {
                 log::info!("ClientConnack: {:?}, {:?}", conn_info, reason);
                 true

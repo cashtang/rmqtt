@@ -18,7 +18,7 @@ concurrency_limit = 128
 
 ## Default urls, supports http and file protocols
 #urls = ["file:///var/log/rmqtt/hook.log", "http://127.0.0.1:5656/mqtt/webhook"]
-urls = ["file:///var/log/rmqtt/hook.log"]
+urls = ["file:///tmp/hook.log"]
 
 ## Http config
 http_timeout = "8s"

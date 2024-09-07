@@ -58,8 +58,8 @@ rpc.client_timeout = "10s"
 # Value: off | file | console | both
 log.to = "both"
 # Value: trace, debug, info, warn, error
-log.level = "info"
-log.dir = "/var/log/rmqtt"
+log.level = "debug"
+log.dir = "./logs"
 log.file = "rmqtt.log"
 
 
@@ -86,7 +86,8 @@ plugins.default_startups = [
     #"rmqtt-auto-subscription",
     #"rmqtt-bridge-egress-pulsar",
     "rmqtt-web-hook",
-    "rmqtt-http-api"
+    "rmqtt-http-api",
+    "rmqtt-newcapec"
 ]
 
 
@@ -213,7 +214,7 @@ listener.tls.external.key = "./rmqtt-bin/rmqtt.key"
 
 ##--------------------------------------------------------------------
 ## MQTT/WebSocket - External WebSocket Listener for MQTT Protocol
-listener.ws.external.addr = "0.0.0.0:8080"
+listener.ws.external.addr = "0.0.0.0:8088"
 
 ##--------------------------------------------------------------------
 ## MQTT/TLS-WebSocket - External TLS-WebSocket Listener for MQTT Protocol, (TLSv1.2)
